@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.hmdp</groupId>
-    <artifactId>hm-dianping</artifactId>
+    <artifactId>reviewhub</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>hm-dianping</name>
-    <description>Demo project for Spring Boot</description>
+    <name>reviewhub</name>
+    <description>ReviewHub - A local business review and discovery platform built with Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>

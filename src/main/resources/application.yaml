@@ -2,10 +2,10 @@ server:
   port: 8081
 spring:
   application:
-    name: hmdp
+    name: reviewhub
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/hmdp
+    url: jdbc:mysql://localhost:3307/hmdp?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
     username: root
     password: 123
   redis:
