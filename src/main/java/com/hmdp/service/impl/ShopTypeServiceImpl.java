@@ -1,5 +1,6 @@
 package com.hmdp.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.interfaces.Func;
 import com.hmdp.entity.ShopType;
 import com.hmdp.mapper.ShopTypeMapper;
 import com.hmdp.service.IShopTypeService;
