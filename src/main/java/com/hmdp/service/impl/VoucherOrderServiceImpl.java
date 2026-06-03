@@ -48,6 +48,8 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         boolean success = seckillVoucherService.update()
                 .setSql("stock = stock - 1")
                 .eq("voucher_id", voucherId)
+                .gt("stock",0)
+                //.eq("stock",voucher.getStock())//乐观锁的体现，CAS 有弊端：高并发往往是在几毫秒之间，有很多县城都会面临与原stock不一致的情况
                 .update();
         if (! success) {
             //扣减失败
