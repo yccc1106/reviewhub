@@ -9,6 +9,8 @@ import com.hmdp.service.ISeckillVoucherService;
 import com.hmdp.service.IVoucherOrderService;
 import com.hmdp.utils.RedisWorker;
 import com.hmdp.utils.UserHolder;
+import lombok.NonNull;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +29,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         this.redisWorker = redisWorker;
     }
 
-    @Transactional
+
     @Override
     public Result seckKillVoucher(Long voucherId) {
         //1.查询优惠券
@@ -44,14 +46,32 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         if (voucher.getStock() < 1) {
             return Result.fail("库存不足");
         }
+        Long userId = UserHolder.getUser().getId();
+        synchronized (userId.toString().intern()) {
+            //获取代理对象（事务）
+            IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
+            return proxy.createVoucherOrder(voucherId);
+        }
+    }
+
+    @Transactional
+    public @NonNull Result createVoucherOrder(Long voucherId) {
+        //4.5一人一单
+        Long userId = UserHolder.getUser().getId();
+        //4.5.1查询订单
+        Integer count = query().eq("user_id", userId).eq("voucher_id", voucherId).count();
+        //4.5.2判断是否存在
+        if (count > 0) {
+            return Result.fail("用户已经购买过一次");
+        }
         //5.扣减库存
         boolean success = seckillVoucherService.update()
                 .setSql("stock = stock - 1")
                 .eq("voucher_id", voucherId)
-                .gt("stock",0)
+                .gt("stock", 0)
                 //.eq("stock",voucher.getStock())//乐观锁的体现，CAS 有弊端：高并发往往是在几毫秒之间，有很多县城都会面临与原stock不一致的情况
                 .update();
-        if (! success) {
+        if (!success) {
             //扣减失败
             return Result.fail("库存不足");
         }
@@ -61,13 +81,13 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         Long orderId = redisWorker.nextId("order");
         voucherOrder.setId(orderId);
         //6.2用户id
-        Long userId = UserHolder.getUser().getId();
+
         voucherOrder.setUserId(userId);
         //6.3代金券id
         voucherOrder.setVoucherId(voucherId);
         save(voucherOrder);
         //7.返回订单id
-
         return Result.ok(orderId);
     }
+
 }
