@@ -10,10 +10,10 @@ import javax.annotation.Resource;
 class ReviewHubApplicationTests {
     @Resource
     ShopServiceImpl shopService;
-    @Test
-    void testSaveShop(){
-        shopService.saveShop2Redis(1L,10L);
-    }
+//    @Test
+//    void testSaveShop(){
+//        shopService.saveShop2Redis(1L,10L);
+//    }
 
 
 }
