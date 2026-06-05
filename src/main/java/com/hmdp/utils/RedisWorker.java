@@ -33,5 +33,4 @@ public class RedisWorker {
         return timeSnap << COUNT_BITS | count;
 
     }
-
 }
